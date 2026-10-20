@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<title>A card for Angeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,600&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#2b1030; --wine:#5a1f4a; --rose:#e8507a; --blush:#fde6ec; --petal:#f7a8bf;
+  --sage:#7a9a7e; --gold:#e3b26b; --ink:#3a1f35; --paper:#fff6f8;
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Nunito',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.7;overflow-x:hidden}
+body.locked{height:100vh;overflow:hidden}
+
+/* ---------- Gate: countdown + cover ---------- */
+#cover{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 85%,var(--wine),var(--plum) 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--blush);
+  transition:transform 1.4s cubic-bezier(.7,0,.2,1);padding:24px;overflow-y:auto}
+#cover.open{transform:translateY(-105%)}
+#cover h1{font:italic 500 clamp(2rem,6vw,3.4rem)/1.1 var(--serif);margin-top:4px}
+#cover .note{font-size:.95rem;opacity:.85;margin:8px 0 18px;max-width:34ch}
+#bouquet{width:min(300px,70vw);height:auto;overflow:visible;flex:none}
+.bloom{transform-box:fill-box;transform-origin:center;animation:bloom 2.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes bloom{from{transform:scale(0) rotate(-40deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.stem{stroke-dasharray:300;stroke-dashoffset:300;animation:grow 1.4s ease-out forwards}
+@keyframes grow{to{stroke-dashoffset:0}}
+
+#countdown{display:flex;gap:clamp(10px,3vw,22px);margin:4px 0 12px}
+.cd{min-width:62px}
+.cd b{display:block;font:italic 600 clamp(2.2rem,8vw,3.6rem)/1 var(--serif);color:var(--petal);font-variant-numeric:tabular-nums}
+.cd span{font-size:.8rem;opacity:.8}
+.hidden{display:none!important}
+
+button.open-btn{font:600 1rem var(--sans);background:var(--rose);color:#fff;border:0;border-radius:99px;padding:13px 34px;cursor:pointer;
+  box-shadow:0 8px 24px rgba(232,80,122,.45);transition:transform .2s}
+button.open-btn:hover{transform:scale(1.05)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* ---------- Music toggle ---------- */
+#music{position:fixed;right:16px;bottom:16px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--rose);color:#fff;font-size:1.2rem;box-shadow:0 6px 18px rgba(0,0,0,.3);display:none}
+#music.on{display:block}
+
+/* ---------- Hero ---------- */
+.hero{min-height:100vh;display:grid;place-items:center;text-align:center;padding:80px 20px;position:relative;
+  background:linear-gradient(180deg,var(--blush),var(--paper))}
+.hero .year{position:absolute;inset:0;display:grid;place-items:center;font:italic 600 clamp(9rem,34vw,26rem)/1 var(--serif);
+  color:transparent;-webkit-text-stroke:2px rgba(232,80,122,.18);user-select:none}
+.hero .inner{position:relative}
+.hero h2{font:italic 500 clamp(2.6rem,9vw,6rem)/1.05 var(--serif);color:var(--wine)}
+.hero .name{font:600 clamp(2.4rem,8vw,4.6rem)/1.2 var(--serif);color:var(--rose);margin-top:6px}
+
+/* ---------- Memories ---------- */
+.memories{max-width:980px;margin:0 auto;padding:90px 20px 40px}
+.title{font:italic 500 clamp(2rem,5vw,3rem)/1.15 var(--serif);color:var(--wine);text-align:center}
+.sub{text-align:center;margin:8px auto 60px;max-width:480px;color:#7a5870}
+.item{display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:center;margin-bottom:84px}
+.item:nth-child(even) .photo{order:2}
+.photo{position:relative;display:block;cursor:pointer;background:#fff;padding:12px 12px 48px;border-radius:4px;
+  box-shadow:0 18px 40px rgba(90,31,74,.18);transform:rotate(-2deg);transition:transform .35s}
+.item:nth-child(even) .photo{transform:rotate(2deg)}
+.photo:hover{transform:rotate(0) scale(1.02)}
+.photo .frame{aspect-ratio:4/5;background:var(--blush);overflow:hidden;display:grid;place-items:center;text-align:center;color:#a2708c;font-size:.9rem;padding:16px}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo input{display:none}
+.photo .corner{position:absolute;top:-14px;right:-10px;width:56px;height:56px}
+.cap .yr{font:italic 600 clamp(3.6rem,10vw,6rem)/1 var(--serif);color:var(--rose)}
+.cap .yr{margin-bottom:8px}
+.cap p{max-width:36ch}
+
+/* ---------- Letter ---------- */
+.letter{background:var(--plum);color:var(--blush);padding:100px 22px;text-align:center}
+.letter .paper{max-width:620px;margin:0 auto}
+.letter h3{font:italic 500 clamp(2rem,5vw,3rem)/1.15 var(--serif);margin-bottom:26px}
+.letter p{font:400 1.18rem/1.9 var(--serif);margin-bottom:18px}
+.letter .sign{font:italic 600 1.8rem var(--serif);color:var(--petal);margin-top:30px}
+footer{text-align:center;padding:30px;font-size:.85rem;color:#a2708c}
+
+/* ---------- Falling petals ---------- */
+.petal{position:fixed;top:-30px;z-index:20;pointer-events:none;border-radius:60% 0 60% 0;opacity:.85;animation:fall linear infinite}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(540deg)}}
+
+@media(max-width:720px){
+  .item{grid-template-columns:1fr;gap:22px;text-align:center}
+  .item:nth-child(even) .photo{order:0}
+  .cap p{margin:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01s!important;transition-duration:.01s!important}
+  .petal{display:none}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- Gate -->
+<section id="cover" aria-label="Card cover">
+  <svg id="bouquet" viewBox="0 0 340 300" role="img" aria-label="A bouquet of peonies"></svg>
+  <h1 id="cvTitle"></h1>
+
+  <div id="lockedBox">
+    <p class="note" id="lockNote"></p>
+    <div id="countdown" aria-live="off">
+      <div class="cd"><b id="cdD">0</b><span>days</span></div>
+      <div class="cd"><b id="cdH">0</b><span>hours</span></div>
+      <div class="cd"><b id="cdM">0</b><span>minutes</span></div>
+      <div class="cd"><b id="cdS">0</b><span>seconds</span></div>
+    </div>
+  </div>
+
+  <div id="openBox" class="hidden">
+    <p class="note">Today is the day. I made something for you.</p>
+    <button class="open-btn" id="btnOpen">Open your card</button>
+  </div>
+</section>
+
+<button id="music" aria-label="Toggle music">♪</button>
+<audio id="song" src="DieWithASmile.mp3" loop preload="auto"></audio>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="year" id="bigYear" aria-hidden="true"></div>
+  <div class="inner">
+    <h2>Happy birthday</h2>
+    <div class="name" id="heroName"></div>
+  </div>
+</header>
+
+<!-- Memories -->
+<main class="memories">
+  <h2 class="title" id="memTitle"></h2>
+  <p class="sub">A few pieces of our year together. Tap a photo to swap it.</p>
+  <div id="list"></div>
+</main>
+
+<!-- Letter -->
+<section class="letter">
+  <div class="paper">
+    <h3 id="letterTitle"></h3>
+    <div id="letterBody"></div>
+    <div class="sign" id="sign"></div>
+  </div>
+</section>
+<footer id="foot"></footer>
+
+<script>
+/* =====================================================
+   EDIT THIS SECTION ONLY
+   Photos: put the image files in the same folder as this
+   file and set "src" to the file name (e.g. "1.jpeg").
+   Song: put your music file next to this file as "DieWithASmile.mp3"
+   (or change SONG_FILE). If it is missing, a built-in
+   birthday melody plays instead.
+   ===================================================== */
+const CONFIG = {
+  name: "Angeline",
+  from: "Yosua",                       // your name
+  unlockMonth: 11,                  // 11 = November
+  unlockDay: 19,
+  memoriesTitle: "Our memories this year",
+  photos: [
+    { src: "1.jpeg", year: "2026", text: "A warm start to the year with you." },
+    { src: "2.jpeg", year: "2026", text: "An ordinary day made special by you." },
+    { src: "3.jpeg", year: "2026", text: "Laughing until we forgot the time." },
+    { src: "4.jpeg", year: "2026", text: "Our little adventure." },
+    { src: "5.jpeg", year: "2026", text: "The moment I will always remember." },
+    { src: "6.jpeg", year: "2026", text: "Simple days, happy hearts." },
+    { src: "7.jpeg", year: "2026", text: "You, smiling. My favorite view." },
+    { src: "8.jpeg", year: "2026", text: "And now, today belongs to you." }
+  ],
+  letterTitle: "To you, with all my love",
+  message: [
+    "Thank you for being by my side this year. You make small things feel beautiful, like flowers quietly blooming between busy days.",
+    "May this new year of your life bring you health, joy, and everything you love. I want to keep celebrating all of it right next to you."
+  ]
+};
+const SONG_FILE = "DieWithASmile.mp3";
+const OPEN_CLICKS = 1;   // taps needed on the open button (1 = normal)
+/* ===================================================== */
+
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* ---------- Fill text ---------- */
+$("cvTitle").textContent = "For " + CONFIG.name;
+$("heroName").textContent = CONFIG.name;
+$("memTitle").textContent = CONFIG.memoriesTitle;
+$("letterTitle").textContent = CONFIG.letterTitle;
+$("sign").textContent = "With love, " + CONFIG.from;
+CONFIG.message.forEach(t => { const p = document.createElement("p"); p.textContent = t; $("letterBody").appendChild(p); });
+document.title = "Happy birthday, " + CONFIG.name;
+
+/* ---------- Date lock ---------- */
+const preview = new URLSearchParams(location.search).has("preview"); // add ?preview to the address to test
+function nextTarget(now){
+  let t = new Date(now.getFullYear(), CONFIG.unlockMonth - 1, CONFIG.unlockDay, 0, 0, 0);
+  if(now >= new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1)) t = new Date(now.getFullYear() + 1, CONFIG.unlockMonth - 1, CONFIG.unlockDay);
+  return t;
+}
+function isBirthday(now){ return now.getMonth() === CONFIG.unlockMonth - 1 && now.getDate() === CONFIG.unlockDay; }
+
+let timer, forced = false;
+function tick(){
+  const now = new Date();
+  if(preview || forced || isBirthday(now)){
+    clearInterval(timer);
+    $("bigYear").textContent = now.getFullYear();
+    $("foot").textContent = "Made with love · " + now.getFullYear();
+    $("lockedBox").classList.add("hidden");
+    $("openBox").classList.remove("hidden");
+    return;
+  }
+  const t = nextTarget(now);
+  $("bigYear").textContent = t.getFullYear();
+  $("foot").textContent = "Made with love · " + t.getFullYear();
+  $("lockNote").textContent = "This card opens on " + CONFIG.unlockDay + " " + MONTHS[CONFIG.unlockMonth - 1] + ". Not a day sooner.";
+  let s = Math.max(0, Math.floor((t - now) / 1000));
+  const d = Math.floor(s / 86400); s %= 86400;
+  const h = Math.floor(s / 3600); s %= 3600;
+  const m = Math.floor(s / 60); s %= 60;
+  $("cdD").textContent = d; $("cdH").textContent = String(h).padStart(2,"0");
+  $("cdM").textContent = String(m).padStart(2,"0"); $("cdS").textContent = String(s).padStart(2,"0");
+}
+tick(); timer = setInterval(tick, 1000);
+
+/* Secret test unlock: click the "For ..." title 5 times within 3 seconds.
+   Set SECRET_TEST to false before you send the card. */
+const SECRET_TEST = true;
+let secretClicks = [];
+$("cvTitle").addEventListener("click", () => {
+  if(!SECRET_TEST) return;
+  const t = Date.now();
+  secretClicks = secretClicks.filter(x => t - x < 3000); secretClicks.push(t);
+  if(secretClicks.length >= 5){ forced = true; tick(); }
+});
+
+/* ---------- Peony SVG ---------- */
+function peony(cx, cy, r, colors, delay){
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("class", "bloom"); g.style.animationDelay = delay + "s";
+  [{n:9,s:1,c:colors[0]},{n:8,s:.72,c:colors[1],rot:20},{n:7,s:.46,c:colors[2],rot:10}].forEach(L => {
+    for(let i = 0; i < L.n; i++){
+      const e = document.createElementNS(NS, "ellipse");
+      e.setAttribute("cx", cx); e.setAttribute("cy", cy - r * L.s * .5);
+      e.setAttribute("rx", r * L.s * .38); e.setAttribute("ry", r * L.s * .52);
+      e.setAttribute("fill", L.c); e.setAttribute("opacity", ".92");
+      e.setAttribute("transform", `rotate(${(360 / L.n) * i + (L.rot || 0)} ${cx} ${cy})`);
+      g.appendChild(e);
+    }
+  });
+  const m = document.createElementNS(NS, "circle");
+  m.setAttribute("cx", cx); m.setAttribute("cy", cy); m.setAttribute("r", r * .1); m.setAttribute("fill", "#e3b26b");
+  g.appendChild(m); return g;
+}
+function stem(d, delay){
+  const p = document.createElementNS(NS, "path");
+  p.setAttribute("d", d); p.setAttribute("class", "stem"); p.setAttribute("fill", "none");
+  p.setAttribute("stroke", "#7a9a7e"); p.setAttribute("stroke-width", "4"); p.setAttribute("stroke-linecap", "round");
+  p.style.animationDelay = delay + "s"; return p;
+}
+function leaf(x, y, rot, delay){
+  const e = document.createElementNS(NS, "ellipse");
+  e.setAttribute("cx", x); e.setAttribute("cy", y); e.setAttribute("rx", 9); e.setAttribute("ry", 24);
+  e.setAttribute("fill", "#7a9a7e"); e.setAttribute("transform", `rotate(${rot} ${x} ${y})`);
+  e.setAttribute("class", "bloom"); e.style.animationDelay = delay + "s"; return e;
+}
+const bq = $("bouquet");
+[["M170 300 C170 250 100 230 90 150",0],["M170 300 C170 240 240 220 252 140",.1],["M170 300 C170 220 170 180 170 110",.2],
+ ["M170 300 C160 260 130 250 125 210",.3],["M170 300 C185 260 215 250 218 210",.35]].forEach(([d,t]) => bq.appendChild(stem(d,t)));
+bq.appendChild(leaf(135,255,-50,1)); bq.appendChild(leaf(205,255,50,1.1));
+bq.appendChild(peony(90,140,56,["#f7a8bf","#f27a9f","#e8507a"],.8));
+bq.appendChild(peony(252,132,52,["#fde6ec","#f7a8bf","#f27a9f"],1));
+bq.appendChild(peony(170,100,70,["#f27a9f","#e8507a","#c9356a"],1.2));
+bq.appendChild(peony(125,205,34,["#fde6ec","#f7c0d0","#f7a8bf"],1.5));
+bq.appendChild(peony(218,205,34,["#f7a8bf","#f27a9f","#e8507a"],1.6));
+
+function miniFlower(){
+  const s = document.createElementNS(NS, "svg");
+  s.setAttribute("viewBox", "0 0 56 56"); s.setAttribute("class", "corner");
+  const g = peony(28, 28, 24, ["#f7a8bf","#f27a9f","#e8507a"], 0);
+  g.removeAttribute("class"); s.appendChild(g); return s;
+}
+
+/* ---------- Photos ---------- */
+CONFIG.photos.forEach(f => {
+  const row = document.createElement("div"); row.className = "item";
+  const lab = document.createElement("label"); lab.className = "photo";
+  const box = document.createElement("div"); box.className = "frame";
+  const ph = document.createElement("span"); ph.textContent = "Tap to choose a photo";
+  box.appendChild(ph);
+  const img = document.createElement("img"); img.alt = f.text; img.style.display = "none";
+  img.onload = () => { img.style.display = "block"; ph.style.display = "none"; };
+  img.onerror = () => { img.style.display = "none"; ph.style.display = "block"; };
+  img.src = f.src; box.appendChild(img);
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
+  inp.onchange = () => { const file = inp.files[0]; if(file) img.src = URL.createObjectURL(file); };
+  lab.append(box, inp, miniFlower());
+  const cap = document.createElement("div"); cap.className = "cap";
+  cap.innerHTML = '<div class="yr"></div><p></p>';
+  cap.querySelector(".yr").textContent = f.year;
+  cap.querySelector("p").textContent = f.text;
+  row.append(lab, cap); $("list").appendChild(row);
+});
+
+/* ---------- Falling petals ---------- */
+function petalRain(){
+  const colors = ["#f7a8bf","#f27a9f","#fde6ec","#e8507a"];
+  for(let i = 0; i < 22; i++){
+    const k = document.createElement("div"); k.className = "petal";
+    const w = 10 + Math.random() * 14;
+    k.style.cssText = `left:${Math.random()*100}vw;width:${w}px;height:${w*1.3}px;background:${colors[i%4]};
+      animation-duration:${8 + Math.random()*8}s;animation-delay:${Math.random()*8}s;--dx:${(Math.random()-.5)*160}px`;
+    document.body.appendChild(k);
+  }
+}
+
+/* ---------- Music: song.mp3, or a built-in melody if the file is missing ---------- */
+const audio = $("song"); audio.src = SONG_FILE;
+let ctx, synthOn = false, synthTimer, usingSynth = false, playing = false;
+const N = {G4:392,A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99};
+const TUNE = [["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],
+              ["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],
+              ["G4",.75],["G4",.25],["G5",1],["E5",1],["C5",1],["B4",1],["A4",1],
+              ["F5",.75],["F5",.25],["E5",1],["C5",1],["D5",1],["C5",2.5]];
+function startSynth(){
+  usingSynth = true; synthOn = true;
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  if(ctx.state === "suspended") ctx.resume();
+  let i = 0;
+  (function next(){
+    if(!synthOn) return;
+    const [n, beats] = TUNE[i % TUNE.length], dur = beats * 0.55;
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+    o.type = "triangle"; o.frequency.value = N[n];
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.18, t + .03);
+    g.gain.exponentialRampToValueAtTime(.001, t + dur * .95);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur);
+    i++; synthTimer = setTimeout(next, dur * 1000 + (i % TUNE.length === 0 ? 1500 : 0));
+  })();
+}
+function stopSynth(){ synthOn = false; clearTimeout(synthTimer); }
+function playMusic(){
+  playing = true; $("music").textContent = "♪";
+  audio.play().catch(() => startSynth());
+}
+function pauseMusic(){
+  playing = false; $("music").textContent = "✕";
+  audio.pause(); stopSynth();
+}
+audio.addEventListener("error", () => { if(playing && !usingSynth) startSynth(); });
+$("music").onclick = () => {
+  if(playing){ pauseMusic(); }
+  else { playing = true; $("music").textContent = "♪"; usingSynth ? startSynth() : audio.play().catch(() => startSynth()); }
+};
+
+/* ---------- Open the card ---------- */
+let openCount = 0;
+$("btnOpen").onclick = () => {
+  openCount++;
+  if(openCount < OPEN_CLICKS){
+    const left = OPEN_CLICKS - openCount;
+    $("btnOpen").textContent = left + (left === 1 ? " more tap…" : " more taps…");
+    $("btnOpen").animate([{transform:"scale(1.18)"},{transform:"scale(1)"}], {duration:220});
+    return;
+  }
+  $("cover").classList.add("open");
+  document.body.classList.remove("locked");
+  window.scrollTo(0, 0);
+  $("music").classList.add("on");
+  playMusic();
+  petalRain();
+  setTimeout(() => { $("cover").style.display = "none"; }, 1500);
+};
+</script>
+</body>
+</html>
